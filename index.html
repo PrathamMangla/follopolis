@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Follopolis · built by followers</title>
+  <meta name="description" content="Every follower gets a home. Every comment gets a job. Find your citizen.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏘️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2">
+  <script>
+    // always load fresh copies so daily updates show up straight away
+    for (const f of ['config', 'jobs', 'data']) document.write(`<script src="js/${f}.js?v=${Date.now()}"><\/script>`);
+  </script>
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <div id="loader">
+    <div class="loader-house">🏘️</div>
+    <div class="loader-text">Raising the roofs…</div>
+  </div>
+
+  <canvas id="scene"></canvas>
+  <div id="labels"></div>
+
+  <header class="hud brand">
+    <div class="brand-row">
+      <div class="logo">🏘️</div>
+      <div>
+        <h1 id="city-name">Follopolis</h1>
+        <p id="city-tagline">The city built by its followers</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><span id="stat-day">1</span><small>Day</small></div>
+      <div class="stat"><span id="stat-citizens">0</span><small>Citizens</small></div>
+      <div class="stat"><span id="stat-jobs">0</span><small>Working</small></div>
+    </div>
+  </header>
+
+  <div class="hud search">
+    <input id="search" type="search" placeholder="Find a citizen or business…" autocomplete="off" spellcheck="false">
+    <ul id="results"></ul>
+  </div>
+
+  <aside class="hud panel" id="panel">
+    <nav class="tabs">
+      <button data-tab="feed" class="on">News</button>
+      <button data-tab="jobs">Jobs</button>
+      <button data-tab="shops">Shops</button>
+      <button data-tab="join">Join</button>
+    </nav>
+    <div class="tab on" id="tab-feed"><ul id="feed"></ul></div>
+    <div class="tab" id="tab-jobs">
+      <h3>Rare jobs <small>only one each</small></h3>
+      <ul id="rare"></ul>
+      <h3>Busiest buildings</h3>
+      <ul id="jobs"></ul>
+    </div>
+    <div class="tab" id="tab-shops">
+      <p class="fine" style="margin:0 0 8px">Businesses run by citizens. Comment your job and business name to put up a shop sign.</p>
+      <ul id="shops"></ul>
+    </div>
+    <div class="tab" id="tab-join">
+      <ol class="steps">
+        <li><b>Follow</b> <span class="handle"></span> and a home is built for you.</li>
+        <li><b>Comment a job</b> on any post (baker, pirate, wizard…). Your citizen starts working.</li>
+        <li><b>Got a business?</b> Add it to your comment: <i>Baker | Luna's Bakes | @lunasbakes</i>. Your house gets a shop sign and you're listed under Shops.</li>
+        <li><b>Keep commenting</b> to level up: Hut → House → Villa → Mansion.</li>
+        <li><b>Find yourself</b> here and share your story card.</li>
+      </ol>
+      <a class="btn primary" id="follow-btn" target="_blank" rel="noopener">Follow on Instagram</a>
+      <p class="fine">Don't want your house shown? DM us and we'll remove it.</p>
+    </div>
+  </aside>
+  <button class="hud panel-toggle" id="panel-toggle" aria-label="Open city panel">☰</button>
+
+  <div class="hud highlight" id="highlight" hidden>
+    <small>🏆 Weird job of the day</small>
+    <div id="highlight-text"></div>
+  </div>
+
+  <div class="hud controls">
+    <button id="btn-time" title="Day / night">🌗</button>
+    <button id="btn-names" title="Show names" class="on">Aa</button>
+    <button id="btn-home" title="Reset view">⌖</button>
+    <button id="btn-reel" title="Reel mode for recording">🎥</button>
+  </div>
+
+  <section class="card" id="card" hidden>
+    <button class="close" id="card-close" aria-label="Close">×</button>
+    <div class="card-head">
+      <div class="avatar" id="card-avatar"></div>
+      <div>
+        <div class="card-name" id="card-name"></div>
+        <div class="card-no" id="card-no"></div>
+      </div>
+    </div>
+    <dl>
+      <dt>Job</dt><dd id="card-job"></dd>
+      <dt class="biz-row">Business</dt><dd class="biz-row" id="card-biz"></dd>
+      <dt>Home</dt><dd id="card-home"></dd>
+      <dt>Moved in</dt><dd id="card-joined"></dd>
+      <dt>Neighbours</dt><dd id="card-nbrs"></dd>
+    </dl>
+    <div class="card-actions">
+      <button class="btn primary" id="btn-story">📸 Story card</button>
+      <button class="btn" id="btn-link">🔗 Copy link</button>
+    </div>
+  </section>
+
+  <div id="reel" hidden>
+    <div class="reel-frame">
+      <div class="reel-top">
+        <div class="reel-day" id="reel-day">Day 1</div>
+        <div class="reel-name" id="reel-name"></div>
+      </div>
+      <div class="reel-bottom">Follow → get your home 🏠<br>Comment → get a job 💬</div>
+    </div>
+    <div class="reel-hint">Reel mode · screen-record the frame · press Esc to exit</div>
+  </div>
+
+  <div id="toast" hidden></div>
+
+  <script type="module" src="js/city.js?v=4"></script>
+</body>
+</html>

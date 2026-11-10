@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Channel Images</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    // always load fresh copies so daily updates show up straight away
+    for (const f of ['config']) document.write(`<script src="js/${f}.js?v=${Date.now()}"><\/script>`);
+  </script>
+  <style>
+    :root { --bg: #0f1428; --card: #182040; --line: rgba(255,255,255,.1); --text: #f5f1e8; --muted: #a9a6bd; --accent: #ffb547; --pink: #ff6f91; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 Inter, system-ui, sans-serif; }
+    main { max-width: 1000px; margin: 0 auto; padding: 24px 16px 60px; }
+    h1, h2 { font-family: Fredoka, Inter, sans-serif; margin: 0 0 6px; }
+    p { color: var(--muted); margin: 0 0 14px; }
+    section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    .out { width: 100%; border-radius: 12px; display: block; background: #0a0e1f; }
+    .pfp { width: 260px; border-radius: 50%; }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+    button { font: 600 14px Inter, sans-serif; border: 0; padding: 10px 16px; border-radius: 10px; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--pink)); color: #2a1420; }
+    button:disabled { opacity: .5; cursor: wait; }
+    #status { color: var(--accent); }
+    /* the live cities render here at full size, shrunk to fit */
+    .stage-clip { position: fixed; left: 0; top: 0; width: 2px; height: 2px; overflow: hidden; opacity: 0.01; pointer-events: none; }
+    .stage { transform-origin: 0 0; transform: scale(0.001); }
+    .stage iframe { border: 0; display: block; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>📸 Channel images</h1>
+  <p>Takes pictures of your real city and turns them into a YouTube banner and a profile picture. Run it again whenever the city has grown.</p>
+  <div class="row" style="margin:0 0 14px"><button id="make" disabled>Loading the city…</button><span id="status"></span></div>
+
+  <section>
+    <h2>YouTube banner · 2560 × 1440</h2>
+    <p>All the text sits inside YouTube's safe area, so it shows on phones, computers and TVs.</p>
+    <canvas id="banner" class="out" width="2560" height="1440"></canvas>
+    <div class="row"><button data-dl="banner">⬇ Download banner</button></div>
+  </section>
+
+  <section>
+    <h2>Profile picture · 800 × 800</h2>
+    <p>The same picture works for YouTube and Instagram. It shows as a circle.</p>
+    <canvas id="pfp" class="out pfp" width="800" height="800"></canvas>
+    <div class="row"><button data-dl="pfp">⬇ Download profile picture</button></div>
+  </section>
+</main>
+
+<div class="stage-clip"><div class="stage">
+  <iframe id="city-wide" src="index.html?time=day" width="2560" height="1440"></iframe>
+  <iframe id="city-close" src="index.html?view=plaza&time=night" width="1000" height="1000"></iframe>
+</div></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const C = window.CITY_CONFIG;
+const shot = id => $(id).contentDocument && $(id).contentDocument.querySelector('#scene');
+
+function cover(ctx, img, W, H) {
+  const s = Math.max(W / img.width, H / img.height);
+  const w = img.width * s, h = img.height * s;
+  ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+}
+
+function drawBanner(city) {
+  const cv = $('#banner'), x = cv.getContext('2d'), W = 2560, H = 1440;
+  cover(x, city, W, H);
+  // darken the middle band so the text reads
+  const g = x.createLinearGradient(0, 380, 0, 1060);
+  g.addColorStop(0, 'rgba(13,20,48,0)');
+  g.addColorStop(0.3, 'rgba(13,20,48,0.72)');
+  g.addColorStop(0.7, 'rgba(13,20,48,0.72)');
+  g.addColorStop(1, 'rgba(13,20,48,0)');
+  x.fillStyle = g;
+  x.fillRect(0, 380, W, 680);
+  x.textAlign = 'center';
+  x.textBaseline = 'alphabetic';
+  x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 24;
+  x.fillStyle = '#fff';
+  x.font = '700 168px Fredoka';
+  x.fillText(`🏘️ ${C.name}`, W / 2, 705);
+  x.shadowBlur = 12;
+  x.fillStyle = '#ffb547';
+  x.font = '600 62px Fredoka';
+  x.fillText(C.tagline, W / 2, 800);
+  x.fillStyle = '#f5f1e8';
+  x.font = '600 44px Inter';
+  x.fillText('🏠 Follow → get a home     💬 Comment → get a job     🏪 Add your business', W / 2, 890, 1500);
+  x.shadowBlur = 0;
+}
+
+function drawPfp(city) {
+  const cv = $('#pfp'), x = cv.getContext('2d'), S = 800;
+  cover(x, city, S, S);
+  const v = x.createRadialGradient(S / 2, S / 2, S * 0.3, S / 2, S / 2, S * 0.72);
+  v.addColorStop(0, 'rgba(13,20,48,0)');
+  v.addColorStop(1, 'rgba(13,20,48,0.6)');
+  x.fillStyle = v;
+  x.fillRect(0, 0, S, S);
+}
+
+async function make() {
+  $('#make').disabled = true;
+  $('#status').textContent = 'Taking pictures…';
+  await document.fonts.load('700 100px Fredoka');
+  await document.fonts.load('600 40px Inter');
+  const wide = shot('#city-wide'), close = shot('#city-close');
+  if (!wide || !close) { $('#status').textContent = 'The city did not load. Open this page from your website or local server, not by double-clicking.'; return; }
+  drawBanner(wide);
+  drawPfp(close);
+  $('#status').textContent = 'Done. Download below.';
+  $('#make').disabled = false;
+  $('#make').textContent = '↻ Take new pictures';
+}
+
+// give the cities a few seconds to load and settle, then take the first pictures
+let loaded = 0;
+document.querySelectorAll('.stage iframe').forEach(f => f.addEventListener('load', () => {
+  if (++loaded === 2) setTimeout(() => { $('#make').textContent = 'Take pictures'; make(); }, 4000);
+}));
+$('#make').onclick = make;
+
+document.querySelectorAll('[data-dl]').forEach(b => b.onclick = () => {
+  const a = document.createElement('a');
+  a.download = `${C.name.toLowerCase()}-${b.dataset.dl === 'pfp' ? 'profile' : 'banner'}.png`;
+  a.href = $('#' + b.dataset.dl).toDataURL('image/png');
+  a.click();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>City Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    // always load fresh copies so daily updates show up straight away
+    for (const f of ['config', 'jobs', 'data']) document.write(`<script src="js/${f}.js?v=${Date.now()}"><\/script>`);
+  </script>
+  <style>
+    :root { --bg: #0f1428; --card: #182040; --line: rgba(255,255,255,.1); --text: #f5f1e8; --muted: #a9a6bd; --accent: #ffb547; --pink: #ff6f91; --ok: #7ddc8a; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 Inter, system-ui, sans-serif; }
+    main { max-width: 860px; margin: 0 auto; padding: 24px 16px 80px; }
+    h1, h2 { font-family: Fredoka, Inter, sans-serif; margin: 0; }
+    h1 { font-size: 26px; }
+    h2 { font-size: 18px; display: flex; gap: 10px; align-items: center; }
+    h2 .n { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #2a1a10; display: grid; place-items: center; font-size: 14px; flex: none; }
+    .top { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+    .top p { margin: 4px 0 0; color: var(--muted); }
+    .stats { display: flex; gap: 8px; }
+    .stat { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 14px; text-align: center; }
+    .stat b { display: block; font: 600 20px Fredoka; color: var(--accent); }
+    .stat small { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+    section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    section p.help { color: var(--muted); margin: 6px 0 12px; }
+    code { background: rgba(255,255,255,.08); padding: 1px 6px; border-radius: 6px; }
+    textarea, input { width: 100%; background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 10px 12px; font: 13.5px/1.5 ui-monospace, Consolas, monospace; }
+    textarea { min-height: 110px; resize: vertical; }
+    input { font-family: Inter, sans-serif; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+    .row input { flex: 1; min-width: 160px; }
+    button { font: 600 14px Inter, sans-serif; border: 1px solid var(--line); background: rgba(255,255,255,.08); color: var(--text); padding: 10px 16px; border-radius: 10px; cursor: pointer; }
+    button:hover { background: rgba(255,255,255,.14); }
+    button.primary { background: linear-gradient(135deg, var(--accent), var(--pink)); color: #2a1420; border: 0; }
+    button.danger { color: var(--pink); }
+    .out { margin-top: 10px; font-size: 13px; color: var(--ok); white-space: pre-wrap; }
+    .out .warn { color: var(--accent); }
+    .save { position: sticky; bottom: 12px; display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #232c55; border-color: rgba(255,181,71,.4); }
+    .save p { margin: 0; color: var(--muted); }
+    .save b { color: var(--accent); }
+    #draft { background: rgba(255,181,71,.12); border-color: rgba(255,181,71,.4); }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1>🏘️ <span id="name"></span> · Daily update</h1>
+      <p>Do this once a day, then download the new <code>data.js</code> and replace the old one.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="s-day"></b><small>Day</small></div>
+      <div class="stat"><b id="s-cit"></b><small>Citizens</small></div>
+      <div class="stat"><b id="s-work"></b><small>Working</small></div>
+    </div>
+  </div>
+
+  <section id="draft" hidden>
+    <h2>You have unsaved changes from last time</h2>
+    <p class="help" id="draft-info"></p>
+    <div class="row"><button class="primary" id="draft-yes">Continue those changes</button><button id="draft-no">Throw them away</button></div>
+  </section>
+
+  <section>
+    <h2><span class="n">1</span> New day</h2>
+    <p class="help">Move the city to the next day. Do this first, before adding today's people.</p>
+    <div class="row"><input id="day" type="number" min="1" style="max-width:120px"><button id="next-day">+1 day</button></div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span> New followers → homes</h2>
+    <p class="help">Paste new follower usernames, one per line. You can paste straight from Instagram's follower list; names, "Follow" buttons and other junk are ignored. People already in the city are skipped.</p>
+    <textarea id="followers" placeholder="luna.draws&#10;max_99&#10;sky.travels"></textarea>
+    <div class="row"><button class="primary" id="add-followers">Build their homes</button></div>
+    <div class="out" id="out-followers"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span> Comments → jobs and level-ups</h2>
+    <p class="help">One comment per line. <code>username: job</code> gives that citizen a job. Just <code>username</code> on its own counts a comment without changing the job. Every line adds one comment, and comments level up houses (2 → House, 5 → Villa, 10 → Mansion). Rare jobs (King, Queen, Wizard, Dragon tamer, Mayor) go to the first person only; anyone after gets "Apprentice".<br>
+      🏪 <b>Business:</b> add it after a <code>|</code>, plus an optional Instagram handle or website: <code>username: Baker | Luna's Bakes | @lunasbakes</code>. They get a shop sign on their house and a spot in the Shops list.</p>
+    <textarea id="comments" placeholder="luna.draws: Baker | Luna's Bakes | @lunasbakes&#10;max_99: ghost hunter&#10;sky.travels"></textarea>
+    <div class="row"><button class="primary" id="apply-comments">Give jobs</button></div>
+    <div class="out" id="out-comments"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span> Weird job of the day</h2>
+    <p class="help">Shown on the website. Pick the funniest job comment of the day.</p>
+    <div class="row"><input id="hl-name" placeholder="username" list="names"><input id="hl-note" placeholder="Fun line, e.g. Every banana is now officially inspected."></div>
+    <div class="row"><button id="set-hl">Set highlight</button></div>
+    <div class="out" id="out-hl"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span> City news</h2>
+    <p class="help">Add a line to the Live feed: votes, disasters, new buildings, milestones.</p>
+    <div class="row"><input id="event" placeholder="Comments voted: the city gets a volcano 🌋"><button id="add-event">Add news</button></div>
+    <div class="out" id="out-event"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">6</span> Businesses</h2>
+    <p class="help">⭐ Featured shops go to the top of the Shops list with a gold sign. Use it for partners or businesses that pay you. Remove a shop sign if a business is spam or asks to be taken down.</p>
+    <div class="row"><input id="biz" placeholder="username" list="names"><button id="feature">⭐ Feature / unfeature</button><button class="danger" id="unbiz">Remove shop sign</button></div>
+    <div class="out" id="out-biz"></div>
+  </section>
+
+  <section>
+    <h2><span class="n">7</span> Remove someone</h2>
+    <p class="help">For anyone who DMs asking to have their house removed.</p>
+    <div class="row"><input id="remove" placeholder="username" list="names"><button class="danger" id="do-remove">Remove</button></div>
+    <div class="out" id="out-remove"></div>
+  </section>
+
+  <section class="save">
+    <p id="changes">No changes yet.</p>
+    <div class="row" style="margin:0">
+      <button id="reset" class="danger">Start an empty city</button>
+      <button class="primary" id="download">⬇ Download data.js</button>
+    </div>
+  </section>
+  <datalist id="names"></datalist>
+</main>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
