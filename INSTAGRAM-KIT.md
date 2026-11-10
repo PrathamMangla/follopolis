@@ -23,7 +23,7 @@ Day 1 🔥
 ```
 Update the day number in the bio every day. It shows the page is alive.
 
-**Link:** your website (for example `follopolis.github.io`).
+**Link:** your website (for example `prathammangla.github.io/follopolis`).
 
 **Profile picture:** screenshot the website zoomed in on the fountain at night (press 🌗 until 🌙). The glowing windows look great as a small circle. Or use the 🏘️ logo on the orange-pink gradient.
 

@@ -3,9 +3,7 @@
 **Name:** Follopolis ("follow" + "polis", the Greek word for city)
 **Meaning:** the city built by its followers.
 
-On 10 Nov 2026 the name was free on YouTube (@follopolis) and GitHub (github.com/follopolis), and Instagram showed no profile for @follopolis. Grab all three on the same day so nobody takes them.
-
-If Instagram says @follopolis is taken, use `@follopolis.city`, then use that same handle everywhere.
+**Done:** Instagram @follopolis (photo, name and bio set), website live. **Still to do:** the website link in the Instagram bio (phone app only) and the YouTube channel.
 
 ---
 
@@ -32,7 +30,7 @@ Sign up at instagram.com with username **follopolis**. Then:
   🏪 Add your business → free shop sign
   Day 1 🔥
   ```
-- **Link:** `https://follopolis.github.io`
+- **Link:** `https://prathammangla.github.io/follopolis`
 - **Profile picture:** the one from Step 1.
 - Settings → Account type → switch to **Creator**.
 
@@ -40,7 +38,7 @@ Sign up at instagram.com with username **follopolis**. Then:
 
 ## Step 3: GitHub (the website)
 
-Sign up at github.com with username **follopolis**. The website address becomes `follopolis.github.io`. Upload the files as described in README.
+Done: the website lives in the PrathamMangla account at `prathammangla.github.io/follopolis`.
 
 ---
 
@@ -59,9 +57,9 @@ Go to youtube.com → your profile picture → **Create a channel**.
   💬 Comment a job and your citizen starts working: baker, pirate, wizard, dragon tamer…
   🏪 Got a business? Add it and your house gets a shop sign.
 
-  Every day the city grows. Find your house: https://follopolis.github.io
+  Every day the city grows. Find your house: https://prathammangla.github.io/follopolis
   ```
-- **Links** (Customization → Basic info): Website → `https://follopolis.github.io`, Instagram → `https://instagram.com/follopolis`
+- **Links** (Customization → Basic info): Website → `https://prathammangla.github.io/follopolis`, Instagram → `https://instagram.com/follopolis`
 - **Keywords** (Settings → Channel): `city builder, built by followers, follopolis, lowpoly city, community game, day by day, timelapse`
 - **Channel trailer:** your best reel so far.
 

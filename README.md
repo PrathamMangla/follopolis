@@ -15,31 +15,25 @@ A 3D city website where every Instagram follower gets a home and every comment g
 | `INSTAGRAM-KIT.md` | Bio, launch posts, daily routine, captions |
 | `CHANNEL-SETUP.md` | Setting up Instagram, YouTube and GitHub as Follopolis |
 
-## Step 1: Pick your name
+## Where it lives
 
-Open `js/config.js` and change `name`, `instagram` and `website`.
+- **Website:** https://prathammangla.github.io/follopolis/
+- **Code:** https://github.com/PrathamMangla/follopolis (public; GitHub Pages serves the `main` branch)
+- **Instagram:** https://instagram.com/follopolis
 
-## Step 2: Start with an empty city
-
-The city currently has 420 made-up test citizens. Before launch:
-1. Open `admin.html` (double-click it).
-2. Click **Start an empty city**.
-3. In box 3, type `yourusername: Mayor` and click **Give jobs**. You're citizen #1.
-4. Add a few friends the same way.
-5. Click **Download data.js** and put it in the `js` folder, replacing the old one.
-
-## Step 3: Put it online for free (GitHub Pages)
-
-1. Make a free account at github.com. Your username becomes the address: if your GitHub username is `follopolis`, the site is `follopolis.github.io`.
-2. Click **New repository** and name it exactly `<your-github-username>.github.io`. Make it **Public**.
-3. Click **uploading an existing file**, drag in everything in this folder (`index.html`, `admin.html`, the `css` and `js` folders), then click **Commit changes**.
-4. Wait about a minute and open `https://<your-github-username>.github.io`.
+The city launched on Day 1 with one citizen: @follopolis, the Mayor.
 
 ## Every day
 
-1. Open `admin.html` on your computer and do steps 1–5.
-2. Click **Download data.js**.
-3. On GitHub, open the `js` folder → **Add file → Upload files** → drop in the new `data.js` → **Commit changes**.
+1. Open `admin.html` (double-click it) and do steps 1–5.
+2. Click **Download data.js** and move it into the `js` folder, replacing the old one.
+3. Publish it. Either run this in this folder:
+   ```
+   git commit -am "Day 2" && git push
+   ```
+   or on GitHub open the `js` folder → **Add file → Upload files** → drop in the new `data.js` → **Commit changes**.
+
+The website updates within a few minutes.
 
 The full routine (recording and posting) is in `INSTAGRAM-KIT.md`.
 
